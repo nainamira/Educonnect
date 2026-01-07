@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutor Dashboard | EduConnect</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container nav-flex">
+            <a href="index.html" class="brand-logo">
+                <img src="assets/logo/logo.png" alt="EduConnect" class="logo-image">
+            </a>
+            <nav class="nav-links">
+                <a href="tutorschedule.html" class="nav-item">Teaching Schedule</a>
+                <a href="tutorearnings.html" class="nav-item">Earnings</a>
+            </nav>
+            <div class="nav-actions">
+                <div class="user-menu" style="display:flex; align-items:center; gap:10px;">
+                    <span class="role-badge" style="background: #e3f2fd; color: #1976d2; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">Tutor</span>
+                    <span style="font-weight:600;" id="userNameDisplay">Loading...</span>
+                    <a href="#" style="font-size:0.9rem; color:red; margin-left:10px;" id="logoutBtn">Log Out</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container dashboard-layout">
+        <aside class="dash-sidebar">
+            <nav>
+                <a href="tutordashboard.html" class="dash-link active"><i class="fas fa-chalkboard-teacher"></i> Tutor Home</a>
+                <a href="tutorrequests.html" class="dash-link"><i class="fas fa-envelope-open-text"></i> Student Requests</a>
+                <a href="tutorschedule.html" class="dash-link"><i class="fas fa-calendar-alt"></i> My Schedule</a>
+                <a href="tutorearnings.html" class="dash-link"><i class="fas fa-wallet"></i> My Earnings</a>
+                <a href="tutorprofile.html" class="dash-link"><i class="fas fa-id-card"></i> Public Profile</a>
+            </nav>
+        </aside>
+
+        <main class="dash-content">
+            <div class="welcome-section">
+                <h1>Welcome back, <span id="welcomeName">Tutor</span>! 👋</h1>
+                <p>Here's your real-time teaching overview from the database.</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Active Students</h3>
+                    <p class="stat-number" id="activeStudentsCount">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Upcoming Sessions</h3>
+                    <p class="stat-number" id="totalSessionsCount">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Avg. Rating</h3>
+                    <p class="stat-number" id="avgRating">4.8 <i class="fas fa-star" style="font-size: 1.2rem; color: #ffc107;"></i></p>
+                </div>
+            </div>
+            
+            <section class="dash-section">
+                <h2>Upcoming Sessions</h2>
+                <div id="bookingContainer">
+                    <div class="loading-spinner">Loading sessions from MySQL...</div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Semak Sesi Pengguna
+            const userStr = localStorage.getItem('user');
+            if (!userStr) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const user = JSON.parse(userStr);
+            document.getElementById('userNameDisplay').textContent = user.full_name;
+            document.getElementById('welcomeName').textContent = user.full_name;
+
+            // 2. Ambil Data dari MySQL (melalui Node.js API)
+            fetchTutorDashboardData(user.id);
+
+            // 3. Fungsi Log Out
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.clear();
+                window.location.href = 'index.html';
+            });
+        });
+
+        async function fetchTutorDashboardData(tutorId) {
+            try {
+                // Menghubungi API server.js anda
+                const response = await fetch(`http://localhost:5000/api/tutor/sessions/${tutorId}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    renderSessions(result.data);
+                    updateStats(result.data);
+                } else {
+                    document.getElementById('bookingContainer').innerHTML = '<p>No sessions found in database.</p>';
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                document.getElementById('bookingContainer').innerHTML = '<p>Unable to connect to MySQL server.</p>';
+            }
+        }
+
+        function renderSessions(sessions) {
+            const container = document.getElementById('bookingContainer');
+            if (sessions.length === 0) {
+                container.innerHTML = '<div class="empty-state">No upcoming bookings.</div>';
+                return;
+            }
+
+            container.innerHTML = sessions.map(session => `
+                <div class="session-card">
+                    <div class="session-time">
+                        <span class="date">${new Date(session.booking_date).toLocaleDateString()}</span>
+                        <span class="time">${session.start_time}</span>
+                    </div>
+                    <div class="session-info">
+                        <h4>${session.subject_name}</h4>
+                        <p>Student: <strong>${session.student_name}</strong></p>
+                    </div>
+                    <div class="session-status">
+                        <span class="status-tag status-${session.status.toLowerCase()}">${session.status}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateStats(sessions) {
+            // Kira jumlah pelajar unik
+            const uniqueStudents = [...new Set(sessions.map(s => s.student_name))].length;
+            document.getElementById('activeStudentsCount').textContent = uniqueStudents;
+            document.getElementById('totalSessionsCount').textContent = sessions.length;
+        }
+    </script>
+
+    <style>
+        /* Gaya Visual Tambahan */
+        .session-card {
+            background: #fff;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            display: grid;
+            grid-template-columns: 120px 1fr 120px;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-left: 5px solid #1976d2;
+        }
+        .session-time { display: flex; flex-direction: column; font-size: 0.9rem; color: #666; }
+        .session-time .date { font-weight: bold; color: #2d3436; }
+        .status-tag { padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
+        .status-pending { background: #fff3e0; color: #ef6c00; }
+        .status-confirmed { background: #e8f5e9; color: #2e7d32; }
+    </style>
+</body>
+</html>

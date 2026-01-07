@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing | EduConnect</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container nav-flex">
+            <a href="index.html" class="brand-logo">
+                <img src="assets/logo/logo.png" alt="EduConnect" class="logo-image">
+            </a>
+            <nav class="nav-links">
+                <a href="tutors.html" class="nav-item" style="color:#000;">Find Tutors</a>
+                <a href="subjects.html" class="nav-item">Subjects</a>
+                <a href="howitworks.html" class="nav-item">How It Works</a>
+                <a href="pricing.html" class="nav-item active">Pricing</a>
+            </nav>
+            
+            <div class="nav-actions" id="navActions">
+                <!-- Navigation will be updated by JavaScript based on login status -->
+                <div id="loggedOutNav">
+                    <a href="login.html" class="btn btn-secondary">Log In</a>
+                    <a href="register.html" class="btn btn-primary">Get Started</a>
+                </div>
+                <div id="loggedInNav" style="display: none;">
+                    <div class="user-menu" style="display:flex; align-items:center; gap:10px;">
+                        <span class="role-badge" id="userRoleBadge" style="background: #e8f5e8; color: #2e7d32; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">User</span>
+                        <span style="font-weight:600;" id="userNameDisplay">User</span>
+                        <div class="dropdown" style="position: relative;">
+                            <button class="btn btn-secondary" onclick="toggleDropdown()">Account ▼</button>
+                            <div id="userDropdown" class="dropdown-menu" style="display: none; position: absolute; right: 0; top: 100%; background: white; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-width: 200px; z-index: 1000;">
+                                <a href="#" id="dashboardLink" style="display: block; padding: 12px 16px; color: #333; text-decoration: none; border-bottom: 1px solid #eee;">Dashboard</a>
+                                <a href="#" id="profileLink" style="display: block; padding: 12px 16px; color: #333; text-decoration: none; border-bottom: 1px solid #eee;">Profile</a>
+                                <a href="#" onclick="logout()" style="display: block; padding: 12px 16px; color: #dc3545; text-decoration: none;">Log Out</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </header>
+
+    <div class="container" style="padding: 4rem 20px; max-width: 1000px; text-align: center;">
+        
+        <h1 style="font-size: 3rem; margin-bottom: 1.5rem;">Transparent Pricing</h1>
+        
+        <p style="font-size: 1.2rem; line-height: 1.8; color: #555; margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+            At EduConnect, we believe in flexibility. <strong>Pricing is not fixed by us.</strong> 
+            Instead, each tutor determines their own hourly rate based on their qualifications, 
+            years of experience, and subject expertise.
+        </p>
+
+        <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; text-align: left;">
+            
+            <div style="flex: 1; min-width: 280px; background: white; padding: 2rem; border-radius: 20px; border: 1px solid #eee;">
+                <h3 style="color: #666; font-size: 1rem; text-transform: uppercase; margin-bottom: 10px;">Student Tutors</h3>
+                <div style="font-size: 2.5rem; font-weight: bold; margin-bottom: 10px;">RM 15 - 30</div>
+                <p style="color: #888; font-size: 0.9rem;">Per Hour</p>
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+                <ul style="color: #555; list-style: none;">
+                    <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color: #000; margin-right: 8px;"></i> Top University Students</li>
+                    <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color: #000; margin-right: 8px;"></i> Peer-to-peer style</li>
+                    <li><i class="fas fa-check" style="color: #000; margin-right: 8px;"></i> Best for homework help</li>
+                </ul>
+            </div>
+
+            <div style="flex: 1; min-width: 280px; background: white; padding: 2rem; border-radius: 20px; border: 1px solid #eee; box-shadow: 0 10px 20px rgba(0,0,0,0.05);">
+                <h3 style="color: #666; font-size: 1rem; text-transform: uppercase; margin-bottom: 10px;">Experienced Tutors</h3>
+                <div style="font-size: 2.5rem; font-weight: bold; margin-bottom: 10px;">RM 35 - 60</div>
+                <p style="color: #888; font-size: 0.9rem;">Per Hour</p>
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+                <ul style="color: #555; list-style: none;">
+                    <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color: #000; margin-right: 8px;"></i> Certified Teachers</li>
+                    <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color: #000; margin-right: 8px;"></i> 3+ Years Experience</li>
+                    <li><i class="fas fa-check" style="color: #000; margin-right: 8px;"></i> Best for exam prep</li>
+                </ul>
+            </div>
+
+             <div style="flex: 1; min-width: 280px; background: white; padding: 2rem; border-radius: 20px; border: 1px solid #eee;">
+                <h3 style="color: #666; font-size: 1rem; text-transform: uppercase; margin-bottom: 10px;">Professional / PhD</h3>
+                <div style="font-size: 2.5rem; font-weight: bold; margin-bottom: 10px;">RM 70+</div>
+                <p style="color: #888; font-size: 0.9rem;">Per Hour</p>
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+                <ul style="color: #555; list-style: none;">
+                    <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color: #000; margin-right: 8px;"></i> Industry Experts</li>
+                    <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color: #000; margin-right: 8px;"></i> Specialized Subjects</li>
+                    <li><i class="fas fa-check" style="color: #000; margin-right: 8px;"></i> Advanced coaching</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <p style="margin-top: 3rem; color: #888; font-size: 0.9rem;">* All payments are securely processed through EduConnect. No hidden platform fees for students.</p>
+
+    </div>
+    
+    <script src="js/auth.js"></script>
+    <script src="js/auth-ui.js"></script>
+
+</body>
+</html>

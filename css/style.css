@@ -1,0 +1,517 @@
+/* =========================================
+   1. VARIABLES & RESET (EduConnect Theme)
+   ========================================= */
+:root {
+    --primary-color: #000000; /* Black */
+    --primary-hover: #333333; /* Dark Gray */
+    --secondary-color: #1e293b;
+    --bg-light: #ffffff;      /* Pure White */
+    --text-gray: #6b7280;
+    --border-radius: 50px;    /* Pill buttons */
+    --card-radius: 20px;      /* Card corners */
+    --shadow: none;           /* Flat look */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-light);
+    color: var(--secondary-color);
+    line-height: 1.6;
+}
+
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+img { max-width: 100%; display: block; }
+
+/* =========================================
+   2. GLOBAL COMPONENTS
+   ========================================= */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Buttons (Pill Shape) */
+.btn {
+    padding: 0.6rem 1.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+    border: 2px solid transparent;
+    display: inline-block;
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: #ffffff;
+}
+.btn-primary:hover { opacity: 0.8; }
+
+.btn-secondary {
+    border: none;
+    color: var(--secondary-color);
+    background: transparent;
+}
+.btn-secondary:hover { color: var(--primary-color); }
+
+.full-width { width: 100%; border-radius: 12px; }
+
+/* Forms */
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; margin-bottom: 0.3rem; font-weight: 500; }
+.form-group input { width: 100%; padding: 0.7rem; border: 1px solid #e5e5e5; border-radius: 12px; background: #f9f9f9; }
+.required { color: red; }
+
+/* =========================================
+   3. NAVIGATION BAR
+   ========================================= */
+.main-header {
+    background-color: #ffffff;
+    padding: 1.2rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.nav-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* LOGO STYLING */
+.brand-logo {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    letter-spacing: -1px;
+    display: flex;
+    align-items: center;
+}
+
+/* CUSTOM LOGO IMAGE SIZE */
+.logo-image {
+    height: 30px; /* Adjust this to make logo bigger/smaller */
+    width: auto;
+    display: block;
+}
+
+/* Navigation Links */
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.nav-item { 
+    font-weight: 500; 
+    color: #555;
+    font-size: 1rem;
+}
+.nav-item:hover, .nav-item.active { color: var(--primary-color); }
+
+/* Right Side Actions */
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.mobile-toggle { display: none; font-size: 1.5rem; cursor: pointer; }
+
+/* =========================================
+   4. HERO SECTION (Split Layout)
+   ========================================= */
+.hero-section {
+    background: #ffffff;
+    padding: 4rem 0;
+    display: flex;
+    align-items: center;
+    min-height: 80vh;
+}
+
+.hero-split {
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.hero-text {
+    flex: 1;
+    padding-right: 1rem;
+}
+
+.hero-text h1 {
+    font-size: 3.5rem;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    color: #000;
+    font-weight: 700;
+}
+
+.hero-text p {
+    font-size: 1.1rem;
+    color: var(--text-gray);
+    margin-bottom: 0;
+    max-width: 450px;
+}
+
+.hero-image-container {
+    flex: 1;
+    height: 450px;
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    position: relative;
+    background: #f0f0f0;
+}
+
+.hero-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* =========================================
+   5. TUTOR BROWSING PAGE
+   ========================================= */
+.main-layout {
+    display: flex;
+    margin-top: 2rem;
+    gap: 2rem;
+    min-height: 80vh;
+}
+
+/* Sidebar */
+.sidebar {
+    flex: 0 0 250px;
+    background: var(--bg-light);
+    padding: 1.5rem;
+    border-radius: var(--card-radius);
+    border: 1px solid #eee;
+    height: fit-content;
+}
+
+.filter-group { margin-bottom: 1.5rem; }
+.filter-group h4 { margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; color: var(--text-gray); }
+.filter-group label { display: block; margin-bottom: 0.3rem; cursor: pointer; }
+
+/* Grid */
+.tutor-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+/* =========================================
+   6. AUTHENTICATION PAGES
+   ========================================= */
+.auth-body {
+    background-color: #f5f5f5;
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh;
+}
+
+.auth-container { width: 100%; max-width: 400px; padding: 1rem; }
+
+.auth-card {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--card-radius);
+    border: 1px solid #eee;
+}
+.auth-card h2 { text-align: center; color: var(--primary-color); margin-bottom: 0.5rem; }
+.auth-subtitle { text-align: center; color: var(--text-gray); margin-bottom: 1.5rem; }
+
+.validation-hint { color: var(--text-gray); font-size: 0.8rem; margin-top: 0.2rem; display: block; }
+.forgot-link { text-align: right; font-size: 0.9rem; margin-top: 0.3rem; }
+
+/* Role Toggle Styles (Hidden Radio) */
+.role-toggle-container { display: flex; gap: 1rem; margin-top: 0.5rem; }
+.role-toggle-container input[type="radio"] { display: none; }
+.role-btn {
+    flex: 1; padding: 0.8rem; text-align: center;
+    border: 1px solid #e5e5e5; background-color: #f9f9f9;
+    border-radius: 12px; cursor: pointer; font-weight: 600;
+    transition: all 0.2s ease; color: #666;
+}
+.role-btn:hover { background-color: #eeeeee; }
+.role-toggle-container input[type="radio"]:checked + label {
+    background-color: #000000; color: #ffffff; border-color: #000000;
+}
+
+/* =========================================
+   7. DASHBOARD
+   ========================================= */
+.dashboard-layout { display: flex; margin-top: 2rem; gap: 2rem; padding-bottom: 2rem; }
+
+.dash-sidebar {
+    flex: 0 0 250px;
+    background: white;
+    padding: 1rem;
+    border-radius: var(--card-radius);
+    border: 1px solid #eee;
+    height: fit-content;
+}
+
+.dash-link {
+    display: block; padding: 0.8rem 1rem;
+    color: var(--secondary-color);
+    border-radius: 10px; margin-bottom: 0.5rem;
+}
+.dash-link:hover { background-color: #f5f5f5; }
+.dash-link.active { background-color: var(--primary-color); color: #fff; }
+.dash-link i { margin-right: 10px; width: 20px; text-align: center; }
+
+.dash-content { flex: 1; }
+
+.stats-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem; margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white; padding: 1.5rem;
+    border-radius: var(--card-radius); border: 1px solid #eee;
+    text-align: center;
+}
+.stat-number { font-size: 2rem; font-weight: bold; color: var(--primary-color); }
+
+.session-card {
+    background: white; padding: 1rem;
+    border-radius: var(--card-radius); border: 1px solid #eee;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 1rem;
+}
+.session-card.highlight { border-left: 5px solid var(--primary-color); }
+
+.session-time { text-align: center; padding-right: 1rem; border-right: 1px solid #eee; min-width: 80px; }
+.session-time .date { display: block; font-weight: bold; }
+.session-time .time { font-size: 0.9rem; color: var(--text-gray); }
+
+.session-info { flex: 1; padding: 0 1.5rem; }
+
+/* Table */
+.data-table {
+    width: 100%; border-collapse: collapse;
+    background: white; border-radius: var(--card-radius);
+    overflow: hidden; border: 1px solid #eee;
+}
+.data-table th, .data-table td { padding: 1rem; text-align: left; border-bottom: 1px solid #eee; }
+.data-table th { background-color: #f9f9f9; font-weight: 600; }
+.link-blue { color: var(--primary-color); text-decoration: underline; }
+
+/* =========================================
+   8. NEW: CUSTOM SUBJECT TAGS (Tutor Profile)
+   ========================================= */
+.subject-input-group {
+    display: flex;
+    gap: 10px;
+}
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 5px 0;
+}
+
+.custom-tag {
+    background-color: var(--secondary-color);
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: fadeIn 0.3s ease;
+}
+
+.tag-close {
+    cursor: pointer;
+    font-size: 1rem;
+    color: #aaa;
+    transition: 0.2s;
+}
+.tag-close:hover { color: #fff; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   9. RESPONSIVE MEDIA QUERIES
+   ========================================= */
+@media (max-width: 900px) {
+    .nav-links { display: none; }
+    .mobile-toggle { display: block; }
+    
+    .hero-split {
+        flex-direction: column-reverse;
+        text-align: center;
+    }
+    
+    .hero-text h1 { font-size: 2.5rem; }
+    .hero-text p { margin: 0 auto; }
+    .hero-image-container { width: 100%; height: 300px; margin-bottom: 2rem; }
+
+    .main-layout, .dashboard-layout { flex-direction: column; }
+    .sidebar, .dash-sidebar { width: 100%; }
+    
+    .session-card { flex-direction: column; text-align: center; gap: 1rem; padding: 1.5rem; }
+    .session-time { border-right: none; border-bottom: 1px solid #eee; width: 100%; padding-bottom: 0.5rem; }
+    .session-action, .session-action button { width: 100%; }
+}
+
+/* =========================================
+   10. CALENDAR & SCHEDULE STYLES (Refined)
+   ========================================= */
+.schedule-container {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+/* Left Side: The Calendar */
+.calendar-wrapper {
+    flex: 2;
+    background: white;
+    padding: 2.5rem;
+    border-radius: var(--card-radius);
+    border: 1px solid #eee;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.month-year { 
+    font-size: 1.6rem; 
+    font-weight: 800; 
+    letter-spacing: -0.5px;
+}
+
+.cal-btn {
+    background: #f9f9f9; 
+    border: 1px solid #eee;
+    width: 44px; height: 44px; 
+    border-radius: 50%;
+    cursor: pointer; 
+    transition: 0.2s;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+}
+.cal-btn:hover { 
+    background: var(--primary-color); 
+    color: white; 
+}
+
+/* Grid System */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    text-align: center;
+}
+
+/* Calendar Days */
+.cal-day {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    cursor: pointer;
+    position: relative;
+    transition: 0.2s;
+    font-weight: 500;
+    font-size: 1rem;
+    background: #fff;
+    border: 1px solid transparent;
+}
+
+.cal-day:hover { 
+    background-color: #f5f5f5; 
+    border-color: #ddd;
+}
+
+.cal-day.empty { 
+    cursor: default; 
+    background: transparent; 
+}
+
+/* Highlight Days with Sessions */
+.cal-day.has-event {
+    background-color: #f0f0f0;
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.event-dot {
+    width: 6px;
+    height: 6px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    margin-top: 4px;
+}
+
+/* Right Side: Details */
+.schedule-details {
+    flex: 1;
+    background: #f9f9f9;
+    padding: 2rem;
+    border-radius: var(--card-radius);
+    border: 1px solid #eee;
+    min-height: 450px;
+}
+
+.event-item {
+    background: white;
+    padding: 1.2rem;
+    border-radius: 15px;
+    margin-bottom: 1rem;
+    border-left: 6px solid var(--primary-color);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    animation: fadeIn 0.4s ease forwards;
+}
+
+.event-time {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-gray);
+    text-transform: uppercase;
+}
+
+.event-info strong {
+    font-size: 1.1rem;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.event-info small {
+    color: var(--text-gray);
+}

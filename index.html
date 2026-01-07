@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduConnect | Online Tutoring</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container nav-flex">
+            <a href="index.html" class="brand-logo">
+                <img src="assets/logo/logo.png" alt="EduConnect" class="logo-image">
+            </a>
+
+            <nav class="nav-links">
+                <a href="tutors.html" class="nav-item">Find Tutors</a>
+                <a href="subjects.html" class="nav-item">Subjects</a>
+                <a href="howitworks.html" class="nav-item">How It Works</a>
+                <a href="pricing.html" class="nav-item">Pricing</a>
+            </nav>
+            
+            <div class="nav-actions" id="navActions">
+                <!-- Navigation will be updated by JavaScript based on login status -->
+                <div id="loggedOutNav">
+                    <a href="login.html" class="btn btn-secondary">Log In</a>
+                    <a href="register.html" class="btn btn-primary">Get Started</a>
+                </div>
+                <div id="loggedInNav" style="display: none;">
+                    <div class="user-menu" style="display:flex; align-items:center; gap:10px;">
+                        <span class="role-badge" id="userRoleBadge" style="background: #e8f5e8; color: #2e7d32; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">User</span>
+                        <span style="font-weight:600;" id="userNameDisplay">User</span>
+                        <div class="dropdown" style="position: relative;">
+                            <button class="btn btn-secondary" onclick="toggleDropdown()">Account ▼</button>
+                            <div id="userDropdown" class="dropdown-menu" style="display: none; position: absolute; right: 0; top: 100%; background: white; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-width: 200px; z-index: 1000;">
+                                <a href="#" id="dashboardLink" style="display: block; padding: 12px 16px; color: #333; text-decoration: none; border-bottom: 1px solid #eee;">Dashboard</a>
+                                <a href="#" id="profileLink" style="display: block; padding: 12px 16px; color: #333; text-decoration: none; border-bottom: 1px solid #eee;">Profile</a>
+                                <a href="#" onclick="logout()" style="display: block; padding: 12px 16px; color: #dc3545; text-decoration: none;">Log Out</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mobile-toggle"><i class="fas fa-bars"></i></div>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero-section">
+        <div class="container hero-split">
+            
+            <div class="hero-text">
+                <h1>Learn from the Best Tutors Online</h1>
+                <p>Connect with expert tutors for personalized 1-on-1 sessions. Master any subject at your own pace.</p>
+                
+                <a href="tutors.html" class="btn btn-primary" style="margin-top: 2rem; padding: 1rem 2rem;">Find a Tutor</a>
+            </div>
+
+            <div class="hero-image-container">
+                <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Students learning">
+            </div>
+
+        </div>
+    </section>
+    <script src="js/auth.js"></script>
+    <script src="js/auth-ui.js"></script>
+
+</body>
+</html>

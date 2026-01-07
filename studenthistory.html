@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class History | EduConnect</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container nav-flex">
+            <a href="index.html" class="brand-logo">
+                <img src="assets/logo/logo.png" alt="EduConnect" class="logo-image">
+            </a>
+            <nav class="nav-links">
+                <a href="tutors.html" class="nav-item">Find Tutors</a>
+                <a href="studentschedule.html" class="nav-item">My Schedule</a>
+            </nav>
+            <div class="nav-actions">
+                <div class="user-menu" style="display:flex; align-items:center; gap:10px;">
+                    <span class="role-badge" style="background: #e8f5e8; color: #2e7d32; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">Student</span>
+                    <span style="font-weight:600;" id="userNameDisplay">Loading...</span>
+                    <a href="#" style="font-size:0.9rem; color:red; margin-left:10px;" onclick="logout()">Log Out</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container dashboard-layout">
+        
+        <aside class="dash-sidebar">
+            <nav>
+                <a href="studentdashboard.html" class="dash-link"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="studentschedule.html" class="dash-link"><i class="fas fa-calendar-alt"></i> Schedule</a>
+                <a href="studenthistory.html" class="dash-link active"><i class="fas fa-history"></i> History</a>
+                <a href="studentprofile.html" class="dash-link"><i class="fas fa-user-cog"></i> Profile Settings</a>
+            </nav>
+        </aside>
+
+        <main class="dash-content">
+            <h2 style="margin-bottom: 1.5rem;">Class History</h2>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Subject</th>
+                        <th>Tutor</th>
+                        <th>Duration</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Dec 20, 2025</td>
+                        <td>Advanced Physics</td>
+                        <td>Muhd. Syafiq</td>
+                        <td>1 Hour</td>
+                        <td><span style="background: #e6fffa; color: #00b894; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: bold;">Completed</span></td>
+                    </tr>
+                    <tr>
+                        <td>Dec 18, 2025</td>
+                        <td>English Essay Writing</td>
+                        <td>Nikita Ravesh</td>
+                        <td>1.5 Hours</td>
+                        <td><span style="background: #e6fffa; color: #00b894; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: bold;">Completed</span></td>
+                    </tr>
+                    <tr>
+                        <td>Dec 15, 2025</td>
+                        <td>Algebra Basics</td>
+                        <td>Adrian Collin</td>
+                        <td>1 Hour</td>
+                        <td><span style="background: #fff5f5; color: #ff7675; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: bold;">Missed</span></td>
+                        <td><span style="color: #aaa;">-</span></td>
+                    </tr>
+                    <tr>
+                        <td>Dec 10, 2025</td>
+                        <td>Python Intro</td>
+                        <td>Sara May Lee</td>
+                        <td>2 Hours</td>
+                        <td><span style="background: #e6fffa; color: #00b894; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: bold;">Completed</span></td> 
+                    </tr>
+                </tbody>
+            </table>
+
+        </main>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <style>
+        .status-badge { font-size: 0.7rem; padding: 3px 8px; border-radius: 20px; font-weight: bold; display: inline-block; }
+        .status-completed { background: #e8f5e9; color: #2e7d32; }
+        .status-confirmed { background: #e3f2fd; color: #1976d2; }
+        .status-pending { background: #fff3e0; color: #ef6c00; }
+        .status-cancelled { background: #ffebee; color: #c62828; }
+        .status-missed { background: #fff5f5; color: #ff7675; }
+    </style>
+    <script>
+        // Initialize authentication
+        document.addEventListener('DOMContentLoaded', function() {
+            initAuth();
+            loadStudentHistory();
+        });
+
+        // Load student history data
+        async function loadStudentHistory() {
+            const user = getCurrentUser();
+            if (!user || user.role !== 'student') {
+                redirectByRole('student');
+                return;
+            }
+
+            try {
+                // Load student bookings (completed sessions)
+                const response = await authenticatedFetch('/student/bookings');
+                const data = await response.json();
+
+                if (data.success) {
+                    displayHistory(data.data);
+                }
+            } catch (error) {
+                console.error('Error loading history:', error);
+            }
+        }
+
+        function displayHistory(bookings) {
+            const tbody = document.querySelector('tbody');
+            if (!tbody) return;
+            
+            if (!bookings || bookings.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem;">No class history found.</td></tr>';
+                return;
+            }
+
+            const html = bookings.map(booking => `
+                <tr>
+                    <td>${new Date(booking.booking_date).toLocaleDateString()}</td>
+                    <td>${booking.subject_name}</td>
+                    <td>${booking.tutor_name}</td>
+                    <td>${booking.duration || '1 Hour'}</td>
+                    <td><span class="status-badge status-${booking.status}">${booking.status.toUpperCase()}</span></td>
+                </tr>
+            `).join('');
+
+            tbody.innerHTML = html;
+        }
+    </script>
+
+</body>
+</html>

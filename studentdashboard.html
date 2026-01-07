@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | EduConnect</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container nav-flex">
+            <a href="index.html" class="brand-logo">
+                <img src="assets/logo/logo.png" alt="EduConnect" class="logo-image">
+            </a>
+            <nav class="nav-links">
+                <a href="tutors.html" class="nav-item">Find Tutors</a>
+                <a href="studentschedule.html" class="nav-item">My Schedule</a>
+            </nav>
+            <div class="nav-actions">
+                <div class="user-menu" style="display:flex; align-items:center; gap:10px;">
+                    <span class="role-badge" style="background: #e8f5e8; color: #2e7d32; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">Student</span>
+                    <span style="font-weight:600;" id="userNameDisplay">Loading...</span>
+                    <a href="#" style="font-size:0.9rem; color:red; margin-left:10px;" onclick="logout()">Log Out</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container dashboard-layout">
+        <aside class="dash-sidebar">
+            <nav>
+                <a href="studentdashboard.html" class="dash-link active"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="studentschedule.html" class="dash-link"><i class="fas fa-calendar-alt"></i> Schedule</a>
+            </nav>
+        </aside>
+
+        <main class="dash-content">
+            <div class="welcome-section">
+                <h1>Welcome back, <span id="welcomeUserName">Student</span>! 👋</h1>
+                <p>Here's your learning dashboard overview.</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Upcoming Sessions</h3>
+                    <p class="stat-number" id="upcomingCount">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Hours</h3>
+                    <p class="stat-number" id="totalHours">0</p>
+                </div>
+            </div>
+
+            <section class="dash-section">
+                <h2>Your Sessions</h2>
+                <div id="sessionsContainer" style="margin-top: 20px;">
+                    <p>Loading your sessions...</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/auth.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const user = JSON.parse(localStorage.getItem('user'));
+        const token = localStorage.getItem('token');
+
+        if (!user || !token) {
+            window.location.href = 'login.html';
+            return;
+        }
+
+        // Display User Name
+        document.getElementById('welcomeUserName').textContent = user.full_name || 'Student';
+        document.getElementById('userNameDisplay').textContent = user.full_name || 'Student';
+
+        loadBookings(token);
+    });
+
+    async function loadBookings(token) {
+        const container = document.getElementById('sessionsContainer');
+
+        try {
+            console.log("Dashboard: Requesting bookings...");
+            const response = await fetch('http://localhost:5000/api/student/bookings', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            const result = await response.json();
+            console.log("Dashboard: Server response:", result);
+
+            if (result.success) {
+                container.innerHTML = ''; // Clear "Loading..." message
+
+                if (result.data.length === 0) {
+                    container.innerHTML = '<p>No bookings found for your email.</p>';
+                    return;
+                }
+
+                // Update Stats
+                document.getElementById('upcomingCount').textContent = result.data.length;
+                document.getElementById('totalHours').textContent = result.data.length; 
+
+                // Create the List
+                result.data.forEach(booking => {
+                    const card = document.createElement('div');
+                    card.style = "background:white; padding:20px; margin-bottom:15px; border-radius:10px; border-left: 5px solid #000; box-shadow: 0 2px 5px rgba(0,0,0,0.1);";
+                    
+                    // --- SAFETY CHECK ---
+                    // This checks EVERY possible name for date/time columns
+                    const dateVal = booking.session_date || booking.date || booking.booking_date || 'N/A';
+                    const timeVal = booking.session_time || booking.time || booking.booking_time || 'N/A';
+                    const tutorVal = booking.tutor_name || ('Tutor ID: ' + booking.tutor_id);
+                    const statusVal = booking.status || 'Pending';
+
+                    // Format Date nicely if possible
+                    let displayDate = dateVal;
+                    if (dateVal !== 'N/A') {
+                        try { displayDate = new Date(dateVal).toLocaleDateString(); } catch(e) {}
+                    }
+
+                    card.innerHTML = `
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <h3 style="margin:0 0 5px 0;">Booking #${booking.booking_id}</h3>
+                                <p style="margin:0; color:#555;"><strong>Date:</strong> ${displayDate}</p>
+                                <p style="margin:0; color:#555;"><strong>Time:</strong> ${timeVal}</p>
+                                <p style="margin:5px 0 0 0; font-size:0.9em; color:#888;">${tutorVal}</p>
+                            </div>
+                            <span style="background:#eee; padding:5px 12px; border-radius:15px; font-weight:bold; font-size:0.85em;">
+                                ${statusVal}
+                            </span>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+
+            } else {
+                // If the server fails, show the EXACT error message in red
+                container.innerHTML = `<p style="color:red; font-weight:bold; padding:20px; background:#ffeeee; border:1px solid red;">SERVER ERROR: ${result.message}</p>`;
+            }
+        } catch (error) {
+            console.error("Fetch Error:", error);
+            container.innerHTML = `<p style="color:red; padding:20px;">CONNECTION ERROR: Could not reach server.<br>Check console (F12) for details.</p>`;
+        }
+    }
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = 'login.html';
+    }
+</script>
+</body>
+</html>

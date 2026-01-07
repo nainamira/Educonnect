@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Booking | EduConnect</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        body { background-color: #fcfcfc; font-family: 'Segoe UI', sans-serif; }
+        
+        .booking-wizard {
+            max-width: 600px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            padding: 30px;
+            min-height: 500px;
+            position: relative;
+            padding-bottom: 90px;
+        }
+
+        /* HEADER */
+        .wizard-header {
+            display: flex; justify-content: center; margin-bottom: 30px;
+            background: #f0f0f0; padding: 5px; border-radius: 50px; width: fit-content; margin: 0 auto 30px auto;
+        }
+        .step-indicator {
+            padding: 10px 25px; border-radius: 30px; color: #888; font-weight: 600; cursor: default;
+            transition: all 0.3s; display: flex; align-items: center; gap: 8px;
+        }
+        .step-indicator.active { background: white; color: #000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .step-num {
+            background: #ccc; color: white; width: 24px; height: 24px; 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px;
+        }
+        .step-indicator.active .step-num { background: #000; }
+
+        /* CONTENT */
+        .step-content { display: none; }
+        .step-content.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .form-label { font-weight: 600; font-size: 0.9rem; margin-bottom: 5px; display: block; }
+        .form-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; box-sizing: border-box; }
+
+        /* PAYMENT CARDS */
+        .payment-card {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 20px; border: 1px solid #eee; border-radius: 10px; cursor: pointer; transition: all 0.2s; background: white;
+        }
+        .payment-card.selected { border-color: #000; box-shadow: 0 0 0 1px #000; background: #fff; }
+        .custom-radio { width: 20px; height: 20px; border: 2px solid #ddd; border-radius: 50%; position: relative; }
+        .payment-card.selected .custom-radio { border-color: #000; }
+        .payment-card.selected .custom-radio::after {
+            content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 10px; height: 10px; background: #000; border-radius: 50%;
+        }
+
+        /* BUTTONS */
+        .wizard-actions {
+            position: absolute; bottom: 30px; left: 30px; right: 30px; display: flex; justify-content: space-between;
+        }
+        .btn-next { background: #000; color: white; border: none; padding: 12px 30px; border-radius: 30px; cursor: pointer; font-weight: bold; }
+        .btn-prev { background: white; color: #666; border: 1px solid #ddd; padding: 12px 30px; border-radius: 30px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <nav style="padding: 20px; text-align: center; border-bottom: 1px solid #eee; background: white;">
+        <h2 style="margin:0;">EduConnect</h2>
+    </nav>
+
+    <div class="booking-wizard">
+        
+        <div class="wizard-header">
+            <div class="step-indicator active" id="step1-indicator"><div class="step-num">1</div> Details</div>
+            <div class="step-indicator" id="step2-indicator"><div class="step-num">2</div> Payment</div>
+        </div>
+
+        <div class="step-content active" id="step1">
+            <h3 style="text-align: center; margin-bottom: 20px;">Session Details</h3>
+            
+            <label class="form-label">Full Name</label>
+            <input type="text" id="name" class="form-input" placeholder="e.g. John Doe">
+
+            <label class="form-label">Email Address</label>
+            <input type="email" id="email" class="form-input" placeholder="e.g. john@example.com">
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <label class="form-label">Date</label>
+                    <input type="date" id="date" class="form-input">
+                </div>
+                <div>
+                    <label class="form-label">Time</label>
+                    <input type="time" id="time" class="form-input">
+                </div>
+            </div>
+
+            <label class="form-label">Session Type</label>
+            <select id="sessionType" class="form-input">
+                <option value="personal">Personal (1-on-1)</option>
+                <option value="group">Group Session</option>
+            </select>
+
+            <label class="form-label">Duration</label>
+            <select id="duration" class="form-input">
+                <option value="1">1 Hour</option>
+                <option value="2">2 Hours</option>
+                <option value="3">3 Hours</option>
+                <option value="4">4 Hours</option>
+                <option value="5">5 Hours</option>
+            </select>
+        </div>
+
+        <div class="step-content" id="step2">
+            <h3 style="text-align: center; margin-bottom: 20px;">Payment Method</h3>
+            
+            <div style="text-align: center; margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                <p style="margin: 0; color: #666;">Total Amount</p>
+                <h1 id="totalAmountDisplay" style="margin: 5px 0; font-size: 2.5rem;">$0.00</h1>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div class="payment-card selected" onclick="selectPayment('card', this)">
+                    <div style="display:flex; align-items:center; gap: 10px;">
+                        <i class="fas fa-credit-card"></i> <span>Credit / Debit Card</span>
+                    </div>
+                    <div class="custom-radio"></div>
+                </div>
+
+                <div class="payment-card" onclick="selectPayment('fpx', this)">
+                    <div style="display:flex; align-items:center; gap: 10px;">
+                        <i class="fas fa-university"></i> <span>Online Banking</span>
+                    </div>
+                    <div class="custom-radio"></div>
+                </div>
+            </div>
+            
+            <div id="cardDetailsForm" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+                <input type="text" class="form-input" placeholder="Card Number">
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" class="form-input" placeholder="MM/YY">
+                    <input type="text" class="form-input" placeholder="CVC">
+                </div>
+            </div>
+        </div>
+
+        <div class="wizard-actions">
+            <button class="btn-prev" id="prevBtn" onclick="goBack()" style="visibility: hidden;">Back</button>
+            <button class="btn-next" id="nextBtn" onclick="goNext()">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let selectedTutorId = localStorage.getItem('selectedTutorId') || 1; 
+        let tutorRate = 50; 
+        let selectedPaymentMethod = 'card';
+
+        // 1. Fetch Tutor Price immediately
+        fetch(`http://localhost:5000/api/tutors/${selectedTutorId}`)
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    tutorRate = parseFloat(data.data.hourly_rate);
+                    console.log("Rate loaded:", tutorRate);
+                }
+            })
+            .catch(err => console.log("Using default rate."));
+
+        // 2. Navigation Functions
+        function goNext() {
+            if (currentStep === 1) {
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const date = document.getElementById('date').value;
+                const time = document.getElementById('time').value;
+
+                if (!name || !email || !date || !time) {
+                    alert("Please fill in all fields.");
+                    return;
+                }
+
+                const hours = parseInt(document.getElementById('duration').value) || 1;
+                const total = tutorRate * hours;
+                document.getElementById('totalAmountDisplay').innerText = `$${total.toFixed(2)}`;
+
+                currentStep = 2;
+                updateUI();
+            } else if (currentStep === 2) {
+                submitBooking();
+            }
+        }
+
+        function goBack() {
+            if (currentStep > 1) {
+                currentStep = 1;
+                updateUI();
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById(`step${currentStep}`).classList.add('active');
+
+            const s1 = document.getElementById('step1-indicator');
+            const s2 = document.getElementById('step2-indicator');
+            if(currentStep === 1) {
+                s1.classList.add('active'); s2.classList.remove('active');
+                document.getElementById('prevBtn').style.visibility = 'hidden';
+                document.getElementById('nextBtn').innerText = 'Continue';
+            } else {
+                s1.classList.remove('active'); s2.classList.add('active');
+                document.getElementById('prevBtn').style.visibility = 'visible';
+                document.getElementById('nextBtn').innerText = 'Confirm & Pay';
+            }
+        }
+
+        function selectPayment(method, cardElement) {
+            selectedPaymentMethod = method;
+            document.querySelectorAll('.payment-card').forEach(c => c.classList.remove('selected'));
+            cardElement.classList.add('selected');
+            
+            const form = document.getElementById('cardDetailsForm');
+            if(form) form.style.display = method === 'card' ? 'block' : 'none';
+        }
+
+        // 5. Submit to Server (UPDATED FOR SUCCESS PAGE)
+        async function submitBooking() {
+            const btn = document.getElementById('nextBtn');
+            btn.innerText = "Processing...";
+            
+            const hours = parseInt(document.getElementById('duration').value) || 1;
+            const formData = {
+                tutor_id: selectedTutorId,
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                date: document.getElementById('date').value,
+                time: document.getElementById('time').value,
+                hours: hours,
+                total_price: tutorRate * hours,
+                payment_method: selectedPaymentMethod,
+                session_type: document.getElementById('sessionType').value
+            };
+
+            try {
+                const response = await fetch('http://localhost:5000/api/book-session', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    // ✅ NEW LOGIC: Save receipt data & Redirect to success page
+                    const receiptInfo = {
+                        id: result.bookingId, // From server
+                        name: formData.name,
+                        email: formData.email,
+                        date: formData.date,
+                        time: formData.time,
+                        hours: formData.hours,
+                        price: formData.total_price
+                    };
+
+                    localStorage.setItem('lastBooking', JSON.stringify(receiptInfo));
+                    window.location.href = 'booking_success.html';
+
+                } else {
+                    alert("Error: " + result.message);
+                    btn.innerText = "Confirm & Pay";
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Server Error. Please try again.");
+                btn.innerText = "Confirm & Pay";
+            }
+        }
+    </script>
+</body>
+</html>

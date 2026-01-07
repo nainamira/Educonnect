@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Schedule | EduConnect</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container nav-flex">
+            <a href="index.html" class="brand-logo">
+                <img src="assets/logo/logo.png" alt="EduConnect" class="logo-image">
+            </a>
+            <nav class="nav-links">
+                <a href="tutors.html" class="nav-item">Find Tutors</a>
+                <a href="studentschedule.html" class="nav-item active" style="color:#000;">My Schedule</a>
+            </nav>
+            <div class="nav-actions">
+                <div class="user-menu" style="display:flex; align-items:center; gap:10px;">
+                    <span class="role-badge" style="background: #e8f5e8; color: #2e7d32; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">Student</span>
+                    <span style="font-weight:600;" id="userNameDisplay">Student</span>
+                    <a href="#" style="font-size:0.9rem; color:red; margin-left:10px;" onclick="logout()">Log Out</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container dashboard-layout">
+        <aside class="dash-sidebar">
+            <nav>
+                <a href="studentdashboard.html" class="dash-link"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="studentschedule.html" class="dash-link active"><i class="fas fa-calendar-alt"></i> Schedule</a>
+            </nav>
+        </aside>
+
+        <main class="dash-content">
+            <div class="welcome-section">
+                <h1>My Class Schedule 📅</h1>
+                <p>Manage your upcoming tutoring sessions.</p>
+            </div>
+            
+            <div id="scheduleContainer" style="margin-top: 20px;">
+                <p>Loading schedule...</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Auth Check
+            const user = JSON.parse(localStorage.getItem('user'));
+            const token = localStorage.getItem('token');
+
+            if (!user || !token) {
+                window.location.href = 'login.html';
+                return;
+            }
+            document.getElementById('userNameDisplay').textContent = user.full_name || 'Student';
+
+            // 2. Load Data
+            loadSchedule(token);
+        });
+
+        async function loadSchedule(token) {
+            const container = document.getElementById('scheduleContainer');
+
+            try {
+                // We use the SAME working route as the Dashboard
+                const response = await fetch('http://localhost:5000/api/student/bookings', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    container.innerHTML = ''; // Clear loading text
+
+                    if (result.data.length === 0) {
+                        container.innerHTML = `
+                            <div style="text-align:center; padding:40px; background:white; border-radius:10px;">
+                                <p>No classes scheduled yet.</p>
+                                <a href="tutors.html" class="btn btn-primary">Book a Tutor</a>
+                            </div>`;
+                        return;
+                    }
+
+                    // Render Cards
+                    result.data.forEach(booking => {
+                        // SAFE VARIABLES (Prevents Crashing)
+                        const dateVal = booking.session_date || booking.date || 'N/A';
+                        const timeVal = booking.session_time || booking.time || 'N/A';
+                        const tutorName = booking.tutor_name || ('Tutor ID: ' + booking.tutor_id);
+                        
+                        let displayDate = dateVal;
+                        if (dateVal !== 'N/A') {
+                            try { 
+                                const d = new Date(dateVal);
+                                displayDate = d.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                            } catch(e) {}
+                        }
+
+                        const card = document.createElement('div');
+                        card.className = 'schedule-card';
+                        card.style = "background: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 6px solid #4CAF50; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px;";
+
+                        card.innerHTML = `
+                            <div>
+                                <h3 style="margin:0 0 8px 0; font-size:1.2rem;">${tutorName}</h3>
+                                <div style="display:flex; gap:15px; color:#555;">
+                                    <span><i class="fas fa-calendar"></i> ${displayDate}</span>
+                                    <span><i class="fas fa-clock"></i> ${timeVal}</span>
+                                </div>
+                                <p style="margin:8px 0 0 0; color:#888; font-size:0.9rem;">Status: <span style="text-transform:capitalize; font-weight:bold; color:#333;">${booking.status}</span></p>
+                            </div>
+                            <div>
+                                <button onclick="joinClass()" style="background:#000; color:white; border:none; padding:10px 25px; border-radius:25px; cursor:pointer; font-weight:bold;">
+                                    Join Class
+                                </button>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    });
+
+                } else {
+                    container.innerHTML = `<p style="color:red">Server Error: ${result.message}</p>`;
+                }
+            } catch (error) {
+                console.error(error);
+                container.innerHTML = '<p style="color:red">Could not load schedule.</p>';
+            }
+        }
+
+        function joinClass() {
+            alert("This feature would open Zoom/Google Meet in the real app!");
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

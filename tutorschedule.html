@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Schedule | EduConnect</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .calendar-container { background: #fff; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; text-align: center; }
+        .day-label { font-weight: bold; color: #64748b; font-size: 0.8rem; padding-bottom: 10px; }
+        .cal-day { min-height: 80px; padding: 10px; border: 1px solid #f1f5f9; border-radius: 8px; cursor: pointer; transition: 0.2s; position: relative; }
+        .cal-day:hover { background: #f8fafc; border-color: #1976d2; }
+        .cal-day.empty { background: #f8fafc; border: none; cursor: default; }
+        .cal-day.has-event { background: #eff6ff; border-color: #bfdbfe; font-weight: bold; }
+        
+        .event-dot { height: 6px; width: 6px; background: #1976d2; border-radius: 50%; position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); }
+        
+        .event-details { background: #fff; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); height: 100%; }
+        .event-item { display: flex; gap: 15px; padding: 15px; border-bottom: 1px solid #f1f5f9; align-items: center; }
+        .event-time { background: #1976d2; color: white; padding: 5px 10px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; }
+        
+        .schedule-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container nav-flex">
+            <a href="index.html" class="brand-logo">
+                <img src="assets/logo/logo.png" alt="EduConnect" class="logo-image">
+            </a>
+            <div class="nav-actions">
+                <div class="user-menu">
+                    <span id="userNameDisplay" style="font-weight:600;">Loading...</span>
+                    <a href="#" onclick="logout()" style="color:red; margin-left:15px; font-size:0.9rem;">Log Out</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container dashboard-layout">
+        <aside class="dash-sidebar">
+            <nav>
+                <a href="tutordashboard.html" class="dash-link"><i class="fas fa-chart-line"></i> Dashboard</a>
+                <a href="tutorschedule.html" class="dash-link active"><i class="fas fa-calendar-alt"></i> My Schedule</a>
+                <a href="tutorearnings.html" class="dash-link"><i class="fas fa-wallet"></i> My Earnings</a>
+                <a href="tutorrequests.html" class="dash-link"><i class="fas fa-envelope-open-text"></i> Requests</a>
+                <a href="tutorprofile.html" class="dash-link"><i class="fas fa-id-card"></i> Public Profile</a>
+            </nav>
+        </aside>
+
+        <main class="dash-content">
+            <div class="schedule-layout">
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <button onclick="changeMonth(-1)" class="btn-icon"><i class="fas fa-chevron-left"></i></button>
+                        <h2 id="monthYear">Month Year</h2>
+                        <button onclick="changeMonth(1)" class="btn-icon"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="calendar-grid">
+                        <div class="day-label">Sun</div><div class="day-label">Mon</div><div class="day-label">Tue</div>
+                        <div class="day-label">Wed</div><div class="day-label">Thu</div><div class="day-label">Fri</div><div class="day-label">Sat</div>
+                    </div>
+                    <div class="calendar-grid" id="calendarGrid"></div>
+                </div>
+
+                <div class="event-details">
+                    <h3 id="selectedDateText">Select a date</h3>
+                    <div id="eventList" style="margin-top: 20px;">
+                        <p style="color:#888;">Click on a blue highlighted date to see your sessions.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+        let confirmedSessions = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const userData = localStorage.getItem('user');
+            const token = localStorage.getItem('token');
+
+            if (!userData || !token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const user = JSON.parse(userData);
+            document.getElementById('userNameDisplay').textContent = user.full_name;
+
+            await fetchSchedule(token);
+            renderCalendar();
+        });
+
+        async function fetchSchedule(token) {
+            try {
+                const response = await fetch(`${API_URL}/tutor/sessions`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    confirmedSessions = result.data.filter(s => s.status === 'confirmed');
+                    renderNextSession();
+                }
+            } catch (err) {
+                console.error("Schedule Error:", err);
+            }
+        }
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            const monthYear = document.getElementById('monthYear');
+            grid.innerHTML = '';
+
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+
+            monthYear.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+            for (let i = 0; i < firstDay; i++) {
+                grid.innerHTML += `<div class="cal-day empty"></div>`;
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const hasEvent = confirmedSessions.some(s => s.booking_date.startsWith(dateStr));
+                
+                grid.innerHTML += `
+                    <div class="cal-day ${hasEvent ? 'has-event' : ''}" onclick="showDayEvents('${dateStr}')">
+                        ${day}
+                        ${hasEvent ? '<span class="event-dot"></span>' : ''}
+                    </div>`;
+            }
+        }
+
+        function showDayEvents(dateStr) {
+            const list = document.getElementById('eventList');
+            const dateText = document.getElementById('selectedDateText');
+            const dayEvents = confirmedSessions.filter(s => s.booking_date.startsWith(dateStr));
+
+            dateText.textContent = `Schedule: ${new Date(dateStr).toDateString()}`;
+
+            if (dayEvents.length === 0) {
+                list.innerHTML = '<p style="color:#888;">No sessions for this day.</p>';
+                return;
+            }
+
+            list.innerHTML = dayEvents.map(ev => `
+                <div class="event-item">
+                    <div class="event-time">${ev.start_time.substring(0, 5)}</div>
+                    <div class="event-info">
+                        <strong>${ev.subject_name}</strong><br>
+                        <small>Student: ${ev.student_name}</small>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderNextSession() {
+            if (confirmedSessions.length > 0) {
+                const soonest = confirmedSessions.sort((a, b) => new Date(a.booking_date) - new Date(b.booking_date))[0];
+                showDayEvents(soonest.booking_date.split('T')[0]);
+            }
+        }
+
+        function changeMonth(dir) {
+            currentMonth += dir;
+            if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+            if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+            renderCalendar();
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

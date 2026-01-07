@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earnings | EduConnect</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Tambahan CSS untuk mencantikkan paparan RM */
+        .currency-symbol { font-size: 0.8rem; margin-right: 4px; color: #64748b; }
+        .data-table th, .data-table td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        .status-pill { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container nav-flex">
+            <a href="index.html" class="brand-logo">
+                <img src="assets/logo/logo.png" alt="EduConnect" class="logo-image">
+            </a>
+            <nav class="nav-links">
+                <a href="tutorschedule.html" class="nav-item">Teaching Schedule</a>
+                <a href="tutorrequests.html" class="nav-item">Student Requests</a>
+            </nav>
+            <div class="nav-actions">
+                <div class="user-menu" style="display:flex; align-items:center; gap:10px;">
+                    <span id="userNameDisplay" style="font-weight:600;">Loading...</span>
+                    <a href="#" id="logoutBtn" style="font-size:0.9rem; color:red; margin-left:10px;">Log Out</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container dashboard-layout">
+        <aside class="dash-sidebar">
+            <nav>
+                <a href="tutordashboard.html" class="dash-link"><i class="fas fa-chart-line"></i> Dashboard</a>
+                <a href="tutorschedule.html" class="dash-link"><i class="fas fa-calendar-alt"></i> My Schedule</a>
+                <a href="tutorearnings.html" class="dash-link active"><i class="fas fa-wallet"></i> My Earnings</a>
+                <a href="tutorrequests.html" class="dash-link"><i class="fas fa-envelope-open-text"></i> Requests</a>
+                <a href="tutorprofile.html" class="dash-link"><i class="fas fa-id-card"></i> Public Profile</a>
+            </nav>
+        </aside>
+
+        <main class="dash-content">
+            <h2 style="margin-bottom: 1.5rem;">My Earnings (RM)</h2>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Available Balance</h3>
+                    <p class="stat-number" id="availableBalance">RM 0.00</p>
+                    <button class="btn btn-primary" style="margin-top: 10px; padding: 5px 15px; font-size: 0.8rem;">Withdraw Funds</button>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Earned</h3>
+                    <p class="stat-number" id="totalEarned">RM 0.00</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Pending Clearance</h3>
+                    <p class="stat-number" id="pendingBalance">RM 0.00</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Transaction History</h3>
+            
+            <table class="data-table" style="width: 100%; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <thead style="background: #f8fafc;">
+                    <tr>
+                        <th>Date</th>
+                        <th>Student</th>
+                        <th>Class</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionBody">
+                    <tr>
+                        <td colspan="5" style="text-align:center; padding: 20px;">Loading transactions...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userStr = localStorage.getItem('user');
+            if (!userStr) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const user = JSON.parse(userStr);
+            document.getElementById('userNameDisplay').textContent = `${user.full_name} (Tutor)`;
+
+            // Ambil data kewangan dari MySQL
+            fetchEarningsData(user.id);
+
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.clear();
+                window.location.href = 'index.html';
+            });
+        });
+
+        async function fetchEarningsData(tutorId) {
+            try {
+                const response = await fetch(`http://localhost:5000/api/tutor/earnings/${tutorId}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    updateEarningsUI(result.data);
+                } else {
+                    document.getElementById('transactionBody').innerHTML = '<tr><td colspan="5" style="text-align:center;">No transactions found.</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('transactionBody').innerHTML = '<tr><td colspan="5" style="text-align:center; color: red;">Error connecting to database.</td></tr>';
+            }
+        }
+
+        function updateEarningsUI(transactions) {
+            const tbody = document.getElementById('transactionBody');
+            let total = 0;
+            let available = 0;
+            let pending = 0;
+
+            if (transactions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No transaction history yet.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = transactions.map(t => {
+                const amt = parseFloat(t.amount);
+                total += amt;
+                
+                if (t.status === 'Cleared') available += amt;
+                else if (t.status === 'Pending') pending += amt;
+
+                // Format tarikh ke gaya tempatan (DD/MM/YYYY)
+                const dateFormatted = new Date(t.date).toLocaleDateString('en-MY');
+
+                return `
+                    <tr>
+                        <td>${dateFormatted}</td>
+                        <td>${t.student_name}</td>
+                        <td>${t.subject_name}</td>
+                        <td style="font-weight: 600;">RM ${amt.toFixed(2)}</td>
+                        <td>
+                            <span class="status-pill" style="background: ${t.status === 'Cleared' ? '#dcfce7' : '#fff3e0'}; color: ${t.status === 'Cleared' ? '#166534' : '#ef6c00'};">
+                                ${t.status}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Kemaskini kad statistik dengan format RM
+            document.getElementById('totalEarned').textContent = `RM ${total.toFixed(2)}`;
+            document.getElementById('availableBalance').textContent = `RM ${available.toFixed(2)}`;
+            document.getElementById('pendingBalance').textContent = `RM ${pending.toFixed(2)}`;
+        }
+    </script>
+</body>
+</html>

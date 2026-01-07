@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In | EduConnect</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="auth-body" style="background-color: #f5f5f5;">
+
+    <header class="main-header" style="position: absolute; top:0; width:100%;">
+        <div class="container nav-flex">
+            <a href="index.html" class="brand-logo">
+                <img src="assets/logo/logo.png" alt="EduConnect" class="logo-image">
+            </a>
+            <div class="nav-actions">
+                <span style="font-size: 0.9rem; margin-right: 10px;">New user?</span>
+                <a href="register.html" class="btn btn-primary" style="padding: 0.4rem 1.2rem; font-size: 0.9rem;">Sign Up</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="auth-container" style="margin-top: 60px;">
+        <div class="auth-card">
+            <h2 style="color: #000; margin-bottom: 0.5rem;">Welcome Back</h2>
+            <p class="auth-subtitle">Log in to continue your learning journey.</p>
+            
+            <form class="auth-form">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="user@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                    <div class="forgot-link">
+                        <a href="forgotpassword.html" style="color:#666;">Forgot Password?</a>
+                    </div>
+                </div>
+
+                <div id="errorMessage" style="display: none; color: red; background: #ffe6e6; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.9rem;"></div>
+                <div id="successMessage" style="display: none; color: green; background: #e6ffe6; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.9rem;"></div>
+
+                <button type="submit" class="btn btn-primary full-width" style="margin-top: 1rem;" id="submitBtn">Log In</button>
+                
+                <div style="margin-top: 1.5rem; text-align: center; font-size: 0.85rem; color: #666; border-top: 1px solid #eee; padding-top: 1rem;">
+                    <p style="margin-bottom: 5px;">Demo Shortcuts:</p>
+                    <a href="studentdashboard.html" style="color: var(--primary-color); font-weight: bold;">Student</a>
+                    <span style="margin: 0 5px;">|</span>
+                    <a href="tutordashboard.html" style="color: var(--primary-color); font-weight: bold;">Tutor</a>
+                    <span style="margin: 0 5px;">|</span>
+                    <a href="admindashboard.html" style="color: red; font-weight: bold;">Admin</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    // 1. Using 127.0.0.1 instead of localhost to prevent Network Errors
+    const API_URL = 'http://127.0.0.1:5000/api';
+    
+    // Clear old session data
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+
+    document.querySelector('.auth-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const submitBtn = document.getElementById('submitBtn');
+        const errorDiv = document.getElementById('errorMessage');
+        const successDiv = document.getElementById('successMessage');
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        errorDiv.style.display = 'none';
+        successDiv.style.display = 'none';
+        
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Logging in...';
+        
+        try {
+            // Updated fetch URL
+            const response = await fetch(`${API_URL}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            
+            // Check if server returned a response but with an error status
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Login failed');
+            }
+
+            const result = await response.json();
+            
+            if (result.success) {
+                localStorage.setItem('token', result.data.token);
+                localStorage.setItem('user', JSON.stringify(result.data.user));
+                
+                successDiv.textContent = `Hello, ${result.data.user.full_name}! Redirecting...`;
+                successDiv.style.display = 'block';
+                
+                setTimeout(() => {
+                    const role = result.data.user.role;
+                    if (role === 'student') window.location.href = 'studentdashboard.html';
+                    else if (role === 'tutor') window.location.href = 'tutordashboard.html';
+                    else if (role === 'admin') window.location.href = 'admindashboard.html';
+                }, 800);
+
+            } else {
+                throw new Error(result.message || 'Invalid credentials');
+            }
+        } catch (error) {
+            console.error('Login Error:', error);
+            // Specifically handling the 'Failed to fetch' error which usually means server is off
+            if (error.message.includes('fetch')) {
+                errorDiv.textContent = 'Network error: Cannot reach the server at 127.0.0.1:5000. Is it running?';
+            } else {
+                errorDiv.textContent = error.message;
+            }
+            errorDiv.style.display = 'block';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Log In';
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | EduConnect</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="auth-body" style="background-color: #f5f5f5;">
+
+    <header class="main-header" style="position: absolute; top:0; width:100%;">
+        <div class="container nav-flex">
+            <a href="index.html" class="brand-logo">
+                <img src="assets/logo/logo.png" alt="EduConnect" class="logo-image">
+            </a>
+            <div class="nav-actions">
+                <span style="font-size: 0.9rem; margin-right: 10px;">Have an account?</span>
+                <a href="login.html" class="btn btn-primary" style="padding: 0.4rem 1.2rem; font-size: 0.9rem;">Log In</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="auth-container" style="margin-top: 80px;">
+        <div class="auth-card">
+            <h2 style="color: #000;">Create Account</h2>
+            <p class="auth-subtitle">Join us to start learning or teaching.</p>
+            
+            <form action="#" class="auth-form">
+                
+                <div class="form-group">
+                    <label for="role">I want to join as: <span class="required">*</span></label>
+                    <select id="role" name="role" required style="width: 100%; padding: 0.7rem; border: 1px solid #e5e5e5; border-radius: 12px; background: #f9f9f9; color: #333; cursor: pointer;">
+                        <option value="" disabled selected>Select Role</option>
+                        <option value="student">Student</option>
+                        <option value="tutor">Tutor</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Full Name <span class="required">*</span></label>
+                    <input type="text" id="fullName" placeholder="Full Name" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Email Address <span class="required">*</span></label>
+                    <input type="email" id="email" placeholder="user@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Password <span class="required">*</span></label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                    <small class="validation-hint">At least 8 chars & 1 symbol.</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Confirm Password <span class="required">*</span></label>
+                    <input type="password" id="confirmPassword" placeholder="••••••••" required>
+                </div>
+
+                <div id="errorMessage" style="display: none; color: red; background: #ffe6e6; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.9rem;"></div>
+                <div id="successMessage" style="display: none; color: green; background: #e6ffe6; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.9rem;"></div>
+
+                <button type="submit" class="btn btn-primary full-width" style="margin-top: 1rem;" id="submitBtn">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    // 1. Using 127.0.0.1 instead of localhost to resolve the Network Error
+    const API_URL = 'http://127.0.0.1:5000/api';
+    
+    document.querySelector('.auth-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Get form elements
+        const submitBtn = document.getElementById('submitBtn');
+        const errorDiv = document.getElementById('errorMessage');
+        const successDiv = document.getElementById('successMessage');
+        const role = document.getElementById('role').value;
+        const fullName = document.getElementById('fullName').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        
+        // Hide previous messages
+        errorDiv.style.display = 'none';
+        successDiv.style.display = 'none';
+        
+        // 2. Client-side Validation
+        if (!role) {
+            errorDiv.textContent = 'Please select a role (Student/Tutor/Admin).';
+            errorDiv.style.display = 'block';
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            errorDiv.textContent = 'Passwords do not match!';
+            errorDiv.style.display = 'block';
+            return;
+        }
+        
+        // Disable button and show loading
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Registering...';
+        
+        try {
+            // 3. Attempt to reach the server
+            const response = await fetch(`${API_URL}/auth/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password,
+                    confirmPassword: confirmPassword,
+                    full_name: fullName,
+                    role: role
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Store token and user info
+                localStorage.setItem('token', data.data.token);
+                localStorage.setItem('user', JSON.stringify(data.data.user));
+                
+                successDiv.textContent = 'Registration successful! Redirecting...';
+                successDiv.style.display = 'block';
+                
+                // Redirect based on role
+                setTimeout(() => {
+                    const userRole = data.data.user.role;
+                    if (userRole === 'student') window.location.href = 'studentdashboard.html';
+                    else if (userRole === 'tutor') window.location.href = 'tutordashboard.html';
+                    else if (userRole === 'admin') window.location.href = 'admindashboard.html';
+                }, 1500);
+            } else {
+                // Handle backend validation errors (e.g., email exists)
+                errorDiv.textContent = data.message || 'Registration failed.';
+                if (data.errors) {
+                    errorDiv.textContent = data.errors[0].msg; // Show first validation error
+                }
+                errorDiv.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Register';
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            // 4. Detailed Network Error messaging
+            errorDiv.textContent = 'Network error: Cannot reach the server at 127.0.0.1:5000. Is the Node.js server running?';
+            errorDiv.style.display = 'block';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Register';
+        }
+    });
+</script>
+
+</body>
+</html>

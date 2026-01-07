@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Requests | EduConnect</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .request-card {
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 6px solid #1976d2;
+            transition: transform 0.2s;
+        }
+        .request-card:hover { transform: translateY(-3px); }
+        .req-name { font-size: 1.1rem; font-weight: bold; color: #2d3436; margin-right: 10px; }
+        .req-badge { background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+        .req-actions { display: flex; gap: 10px; }
+        .btn-accept { background: #22c55e; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+        .btn-decline { background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+        .processed-card { opacity: 0.75; border-left-color: #94a3b8; }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container nav-flex">
+            <a href="index.html" class="brand-logo">
+                <img src="assets/logo/logo.png" alt="EduConnect" class="logo-image">
+            </a>
+            <div class="nav-actions">
+                <div class="user-menu" style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-weight:600;">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container dashboard-layout">
+        <aside class="dash-sidebar">
+            <nav>
+                <a href="tutordashboard.html" class="dash-link"><i class="fas fa-chart-line"></i> Dashboard</a>
+                <a href="tutorschedule.html" class="dash-link"><i class="fas fa-calendar-alt"></i> My Schedule</a>
+                <a href="tutorearnings.html" class="dash-link"><i class="fas fa-wallet"></i> My Earnings</a>
+                <a href="tutorrequests.html" class="dash-link active"><i class="fas fa-envelope-open-text"></i> Requests</a>
+                <a href="tutorprofile.html" class="dash-link"><i class="fas fa-id-card"></i> Public Profile</a>
+            </nav>
+        </aside>
+
+        <main class="dash-content">
+            <h2 style="margin-bottom: 1.5rem;">Incoming Requests</h2>
+
+            <div id="requestsList">
+                <p>Loading student requests...</p>
+            </div>
+
+            <h3 style="margin-top: 3rem; margin-bottom: 1rem; color:#64748b; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">
+                History (Processed Requests)
+            </h3>
+            <div id="processedList"></div>
+        </main>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const userData = localStorage.getItem('user');
+            const token = localStorage.getItem('token');
+
+            if (!userData) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const user = JSON.parse(userData);
+            document.querySelector('.user-menu span').textContent = `${user.full_name} (Tutor)`;
+
+            loadRequests(user.id);
+        });
+
+        async function loadRequests(tutorId) {
+            try {
+                // Mengambil data dari endpoint API MySQL anda
+                const response = await fetch(`${API_URL}/tutor/sessions/${tutorId}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    renderLists(result.data);
+                }
+            } catch (err) {
+                console.error("Error loading requests:", err);
+                document.getElementById('requestsList').innerHTML = '<p>Connection to MySQL failed.</p>';
+            }
+        }
+
+        function renderLists(sessions) {
+            const incomingContainer = document.getElementById('requestsList');
+            const processedContainer = document.getElementById('processedList');
+            
+            // Asingkan data ikut status
+            const pending = sessions.filter(s => s.status.toLowerCase() === 'pending');
+            const processed = sessions.filter(s => s.status.toLowerCase() !== 'pending');
+
+            // 1. Render Permintaan Baru
+            if (pending.length === 0) {
+                incomingContainer.innerHTML = '<div style="padding:20px; background:#f8fafc; border-radius:10px;">No new requests at the moment.</div>';
+            } else {
+                incomingContainer.innerHTML = pending.map(req => `
+                    <div class="request-card">
+                        <div class="req-info">
+                            <div class="req-header" style="margin-bottom:8px;">
+                                <span class="req-name">${req.student_name}</span>
+                                <span class="req-badge">New</span>
+                            </div>
+                            <p style="color:#64748b; font-size:0.9rem; margin: 4px 0;">
+                                <i class="far fa-calendar-alt"></i> Date: <strong>${new Date(req.booking_date).toLocaleDateString()}</strong>
+                            </p>
+                            <p style="color:#64748b; font-size:0.9rem; margin: 4px 0;">
+                                <i class="far fa-clock"></i> Time: <strong>${req.start_time}</strong>
+                            </p>
+                            <p style="color:#64748b; font-size:0.9rem;">
+                                <i class="fas fa-book"></i> Subject: <strong>${req.subject_name}</strong>
+                            </p>
+                        </div>
+                        <div class="req-actions">
+                            <button class="btn-accept" onclick="handleStatus(${req.booking_id}, 'Confirmed')">Accept</button>
+                            <button class="btn-decline" onclick="handleStatus(${req.booking_id}, 'Cancelled')">Decline</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // 2. Render Permintaan Selesai
+            processedContainer.innerHTML = processed.map(req => `
+                <div class="request-card processed-card">
+                    <div class="req-info">
+                        <div class="req-header">
+                            <span class="req-name">${req.student_name}</span>
+                            <span style="color:${req.status === 'Confirmed' ? '#16a34a' : '#dc2626'}; font-weight:bold; font-size:0.8rem;">
+                                ${req.status.toUpperCase()}
+                            </span>
+                        </div>
+                        <p style="color:#64748b; font-size:0.85rem;">${req.subject_name} - ${new Date(req.booking_date).toLocaleDateString()}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function handleStatus(bookingId, newStatus) {
+            if (!confirm(`Are you sure you want to ${newStatus} this request?`)) return;
+
+            try {
+                const response = await fetch(`${API_URL}/bookings/${bookingId}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                });
+
+                if (response.ok) {
+                    alert(`Request ${newStatus} successfully!`);
+                    location.reload(); 
+                }
+            } catch (err) {
+                alert("Error updating database.");
+            }
+        }
+    </script>
+</body>
+</html>

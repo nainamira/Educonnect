@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduConnect Admin | Premium Analytics</title>
+    
+    <link rel="stylesheet" href="admin_style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="admin-body">
+
+    <aside class="sidebar" id="adminSidebar">
+        <div class="sidebar-logo"> <div class="logo-wrapper">
+                <img src="logo.png" alt="EduConnect Logo" class="admin-brand-logo">
+            </div>
+            <button onclick="toggleSidebar()" class="menu-toggle" id="sidebarToggleBtn">
+                <i class="fas fa-columns"></i>
+            </button>
+        </div>
+        
+        <div class="admin-status-container">
+            <small class="admin-status">Administrator</small>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <ul>
+                <li id="nav-dashboard" class="active" onclick="showSection('dashboard')">
+                    <a href="#"><i class="fas fa-th-large"></i> <span class="nav-text">Dashboard</span></a>
+                </li>
+                <li id="nav-tutors" onclick="showSection('tutors')">
+                    <a href="#"><i class="fas fa-user-tie"></i> <span class="nav-text">Tutor Requests</span></a>
+                </li>
+                <li id="nav-members" onclick="showSection('members')">
+                    <a href="#"><i class="fas fa-user-graduate"></i> <span class="nav-text">Students</span></a>
+                </li>
+                <li id="nav-reports" onclick="showSection('reports')">
+                    <a href="#"><i class="fas fa-file-invoice-dollar"></i> <span class="nav-text">Financials</span></a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="index.php" class="logout-link" style="color: white; text-decoration: none; padding: 20px; display: block;">
+                <i class="fas fa-sign-out-alt"></i> <span class="nav-text">Sign Out</span>
+            </a>
+        </div>
+    </aside>
+
+    <div class="main-wrapper" id="mainWrapper">
+        <header class="top-nav">
+            <div class="nav-left">
+                <h1 id="pageTitle">Dashboard</h1>
+            </div>
+        </header>
+
+        <main class="content-container">
+            
+            <div id="section-dashboard" class="admin-section">
+                <div class="section-header">
+                    <div class="header-text">
+                        <h2>Performance Summary</h2>
+                        <p>Real-time overview of EduConnect operations.</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="export-btn pdf" onclick="window.print()">
+                            <i class="fas fa-file-pdf"></i> Export PDF
+                        </button>
+                        <button class="export-btn csv">
+                            <i class="fas fa-file-csv"></i> Download CSV
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bento-grid">
+                    <div class="bento-item stat-card blue">
+                        <div class="card-icon"><i class="fas fa-wallet"></i></div>
+                        <h3>Total Revenue</h3>
+                        <p class="stat-value">RM 1,240.00</p>
+                        <span class="stat-trend up"><i class="fas fa-arrow-up"></i> 12.5%</span>
+                    </div>
+
+                    <div class="bento-item stat-card purple">
+                        <div class="card-icon"><i class="fas fa-calendar-check"></i></div>
+                        <h3>Total Bookings</h3>
+                        <p class="stat-value">156</p>
+                        <span class="stat-trend up"><i class="fas fa-arrow-up"></i> 8.2%</span>
+                    </div>
+
+                    <div class="bento-item stat-card green">
+                        <div class="card-icon"><i class="fas fa-users"></i></div>
+                        <h3>Active Tutors</h3>
+                        <p class="stat-value">42</p>
+                        <span class="stat-trend">System Verified</span>
+                    </div>
+
+                    <div class="bento-item stat-card orange">
+                        <div class="card-icon"><i class="fas fa-user-plus"></i></div>
+                        <h3>New Students</h3>
+                        <p class="stat-value">89</p>
+                        <span class="stat-trend up"><i class="fas fa-arrow-up"></i> 15%</span>
+                    </div>
+
+                    <div class="bento-item chart-area">
+                        <div class="card-header">
+                            <h3>Transaction Trends</h3>
+                        </div>
+                        <div class="canvas-wrapper" style="height: 300px;">
+                            <canvas id="transactionChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="bento-item table-area">
+                        <div class="card-header">
+                            <h3>Recent Transactions</h3>
+                            <button class="view-all">View All</button>
+                        </div>
+                        <div class="responsive-table">
+                            <table class="premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Student</th>
+                                        <th>Tutor</th>
+                                        <th>Subject</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="section-tutors" class="admin-section" style="display:none;">
+                <div class="section-header">
+                    <h2>Tutor Applications</h2>
+                </div>
+                <div class="bento-item table-area">
+                    <div class="responsive-table">
+                        <table class="premium-table">
+                            <thead>
+                                <tr>
+                                    <th>Tutor Name</th>
+                                    <th>Subject</th>
+                                    <th>Applied Date</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="section-members" class="admin-section" style="display:none;">
+                <div class="section-header">
+                    <h2>Student Directory</h2>
+                </div>
+                <div class="bento-item table-area">
+                    <div class="responsive-table">
+                        <table class="premium-table">
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Joined</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="section-reports" class="admin-section" style="display:none;">
+                <div class="section-header">
+                    <h2>Financial Reports</h2>
+                </div>
+                <div class="bento-item table-area">
+                    <div class="responsive-table">
+                        <table class="premium-table">
+                            <thead>
+                                <tr>
+                                    <th>Txn ID</th>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Method</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div id="resumeModal" class="modal-overlay" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; align-items: center; justify-content: center;">
+    <div class="bento-item" style="width: 500px; max-width: 90%; position: relative;">
+        <button onclick="closeModal()" style="position: absolute; right: 20px; top: 20px; border: none; background: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+        <h2 id="modalTutorName">Tutor Details</h2>
+        <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
+        <div id="modalContent">
+            <p><strong>Education:</strong> <span id="modalEdu"></span></p>
+            <p><strong>Bio:</strong> <span id="modalBio"></span></p>
+            <p><strong>Certifications:</strong> Verified</p>
+        </div>
+        <div style="margin-top: 25px; display: flex; gap: 10px;">
+            <button onclick="closeModal()" class="export-btn csv">Close</button>
+        </div>
+    </div>
+</div>
+
+    <script src="admin_script.js"></script>
+</body>
+</html>

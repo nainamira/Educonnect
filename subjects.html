@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Subjects | EduConnect</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* Horizontal Scroll for Levels */
+        .level-scroll-container {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            margin-bottom: 2rem;
+            white-space: nowrap;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        .level-scroll-container::-webkit-scrollbar {
+            display: none; /* Hide scrollbar for Chrome/Safari */
+        }
+        .level-btn {
+            background: #f9f9f9;
+            border: 1px solid #eee;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.2s;
+            flex-shrink: 0; /* Prevents buttons from squishing */
+        }
+        .level-btn:hover, .level-btn.active {
+            background: #000;
+            color: #fff;
+            border-color: #000;
+        }
+
+        /* Subject Card Override */
+        .subject-card {
+            text-align: center;
+            padding: 2rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+            background: #fff;
+            border-radius: 20px;
+            border: 1px solid #eee;
+        }
+        .subject-card:hover {
+            transform: translateY(-5px);
+            border-color: #000;
+        }
+        .subject-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container nav-flex">
+            <a href="index.html" class="brand-logo">
+                <img src="assets/logo/logo.png" alt="EduConnect" class="logo-image">
+            </a>
+            <nav class="nav-links">
+                <a href="tutors.html" class="nav-item" style="color:#000;">Find Tutors</a>
+                <a href="subjects.html" class="nav-item active">Subjects</a>
+                <a href="howitworks.html" class="nav-item">How It Works</a>
+                <a href="pricing.html" class="nav-item">Pricing</a>
+            </nav>
+            
+            <div class="nav-actions" id="navActions">
+                <!-- Navigation will be updated by JavaScript based on login status -->
+                <div id="loggedOutNav">
+                    <a href="login.html" class="btn btn-secondary">Log In</a>
+                    <a href="register.html" class="btn btn-primary">Get Started</a>
+                </div>
+                <div id="loggedInNav" style="display: none;">
+                    <div class="user-menu" style="display:flex; align-items:center; gap:10px;">
+                        <span class="role-badge" id="userRoleBadge" style="background: #e8f5e8; color: #2e7d32; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">User</span>
+                        <span style="font-weight:600;" id="userNameDisplay">User</span>
+                        <div class="dropdown" style="position: relative;">
+                            <button class="btn btn-secondary" onclick="toggleDropdown()">Account ▼</button>
+                            <div id="userDropdown" class="dropdown-menu" style="display: none; position: absolute; right: 0; top: 100%; background: white; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-width: 200px; z-index: 1000;">
+                                <a href="#" id="dashboardLink" style="display: block; padding: 12px 16px; color: #333; text-decoration: none; border-bottom: 1px solid #eee;">Dashboard</a>
+                                <a href="#" id="profileLink" style="display: block; padding: 12px 16px; color: #333; text-decoration: none; border-bottom: 1px solid #eee;">Profile</a>
+                                <a href="#" onclick="logout()" style="display: block; padding: 12px 16px; color: #dc3545; text-decoration: none;">Log Out</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </header>
+
+    <div class="container" style="padding-top: 3rem; padding-bottom: 3rem;">
+        
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">Explore Subjects</h1>
+            <div style="position: relative; max-width: 500px; margin: 0 auto;">
+                <input type="text" placeholder="What do you want to learn?" style="width: 100%; padding: 15px 20px 15px 50px; border-radius: 50px; border: 1px solid #ddd; font-size: 1rem;">
+                <i class="fas fa-search" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #888;"></i>
+            </div>
+        </div>
+
+        <h4 style="margin-bottom: 10px; color: #666;">Filter by Level:</h4>
+        <div class="level-scroll-container">
+            <button class="level-btn active">All Levels</button>
+            <button class="level-btn">Primary School (Std 1-6)</button>
+            <button class="level-btn">Lower Secondary (F1-F3)</button>
+            <button class="level-btn">SPM / O-Level</button>
+            <button class="level-btn">STPM / A-Level</button>
+            <button class="level-btn">University / College</button>
+            <button class="level-btn">Adult Learning</button>
+        </div>
+
+        <div id="subjectsContainer" class="tutor-grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
+            
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/auth-ui.js"></script>
+    <script>
+        // Load subjects data
+        document.addEventListener('DOMContentLoaded', async function() {
+            updateNavigation();
+            await loadSubjects();
+        });
+
+        async function loadSubjects() {
+            try {
+                const response = await fetch('http://127.0.0.1:5000/api/subjects');
+                const data = await response.json();
+                
+                if (data.success) {
+                    displaySubjects(data.data);
+                }
+            } catch (error) {
+                console.error('Error loading subjects:', error);
+            }
+        }
+
+        function displaySubjects(subjects) {
+            const container = document.getElementById('subjectsContainer');
+            if (!container) return;
+            
+            const html = subjects.map(subject => `
+                <div class="subject-card">
+                    <h3>${subject.name}</h3>
+                    <a href="tutors.html?subject=${subject.subject_id}" class="btn btn-primary">Find Tutors</a>
+                </div>
+            `).join('');
+            
+            container.innerHTML = html;
+        }
+    </script>
+
+</body>
+</html>
