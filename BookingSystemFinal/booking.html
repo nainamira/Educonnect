@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduConnect - Book Your Tutor</title>
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="booking.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+</head>
+<body>
+
+    <div class="header-wrapper">
+        <nav class="navbar">
+            <div class="nav-left">
+                <a href="index.php"><img src="logo.png" alt="EduConnect Logo" id="mainLogo"></a>
+            </div>
+            <div class="nav-center"><h1 class="site-title">Tutor Bookings</h1></div>
+            <div class="nav-right">
+                <div class="nav-links">
+                    <a href="index.php">Home</a>
+                    <a href="login.php" class="login-btn">Login / Register</a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="modern-progress-bar">
+            <div class="progress-tab completed"><span class="tab-number">1</span><span class="tab-text">Select Tutor</span></div>
+            <div class="progress-tab active" id="tab2"><span class="tab-number">2</span><span class="tab-text">Booking Details</span></div>
+            <div class="progress-tab" id="tab3"><span class="tab-number">3</span><span class="tab-text">Payment</span></div>
+        </div>
+    </div>
+
+    <main class="container">
+        
+        <div id="booking-details-step" class="booking-card animate-card">
+            <div class="calculation-box bento-inner">
+                <div class="tutor-mini-card">
+                    <div class="tutor-avatar">👨‍🏫</div>
+                    <div class="tutor-info">
+                        <p class="tutor-label">Your Tutor</p>
+                        <p class="tutor-name">Dr. Adirja Mikaeel</p>
+                        <p class="tutor-profession">Profession: Mathematics</p>
+                        <p class="tutor-background">Background: PhD in Applied Mathematics, Certified Secondary & University Lecturer</p>
+                        <p class="tutor-availability">Availability: Weekdays 6–9 PM, Weekends 10 AM–4 PM</p>
+                    </div>
+                    <div class="subject-tag">Mathematics</div>
+                </div>
+
+                 <div class="section-header" style="margin-top: 40px;">
+                <span class="badge" style="background: #f59e0b;">Preferences</span>
+                <h2>Session Details</h2>
+            </div>
+
+            <div class="booking-form-grid">
+    <div class="form-group glass-input full-width">
+        <label>Learning Goals / Notes</label>
+        <div class="input-wrapper">
+            <span>📝</span>
+            <input type="text" id="learningGoals" placeholder="e.g. Exam prep, homework help">
+        </div>
+    </div>
+
+    <div class="form-group glass-input">
+        <label>Session Type</label>
+        <div class="input-wrapper">
+            <span>👥</span>
+            <select id="sessionType" class="styled-select">
+                <option value="one-on-one">Single Session</option>
+                <option value="recurring">Recurring</option>
+                <option value="monthly package">Monthly Package</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group glass-input">
+        <label>Start Date</label>
+        <div class="input-wrapper">
+            <span>📅</span>
+            <input type="datetime-local" id="startDate" required>
+        </div>
+    </div>
+
+    <div class="form-group glass-input">
+        <label>End Date</label>
+        <div class="input-wrapper">
+            <span>📅</span>
+            <input type="datetime-local" id="endDate" required>
+        </div>
+    </div>
+
+    <div class="form-group glass-input">
+        <label>Preferred Time Slots</label>
+        <div class="input-wrapper">
+            <span>🕒</span>
+            <select id="timeSlots" class="styled-select" required>
+                <option value="" disabled selected>Select a day & time</option>
+                <optgroup label="Weekdays">
+                    <option value="mon-6pm">Monday (6:00 PM - 9:00 PM)</option>
+                    <option value="wed-6pm">Wednesday (6:00 PM - 9:00 PM)</option>
+                    <option value="fri-6pm">Friday (6:00 PM - 9:00 PM)</option>
+                </optgroup>
+                <optgroup label="Weekends">
+                    <option value="sat-10am">Saturday (10:00 AM - 4:00 PM)</option>
+                    <option value="sun-10am">Sunday (10:00 AM - 4:00 PM)</option>
+                </optgroup>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group glass-input">
+        <label>Duration Option</label>
+        <div class="input-wrapper">
+            <span>⏳</span>
+            <select id="hoursInput" class="styled-select" onchange="updateTotal()">
+                <option value="0.5">30 Minutes</option>
+                <option value="1" selected>1 Hour</option>
+                <option value="2">2 Hours</option>
+            </select>
+        </div>
+    </div>
+</div>
+            <div class="section-header">
+                <span class="badge">Step 02</span>
+                <h2>Learner Information</h2>
+                <p>Tell us who will be attending the session.</p>
+            </div>
+
+            <div class="booking-form-grid">
+                <div class="form-group glass-input">
+                    <label>Full Name</label>
+                    <div class="input-wrapper">
+                        <span>👤</span>
+                        <input type="text" id="fullName" placeholder="" required>
+                    </div>
+                </div>
+                
+                <div class="form-group glass-input">
+                    <label>Email Address</label>
+                    <div class="input-wrapper">
+                        <span>📧</span>
+                        <input type="email" id="emailAddress" placeholder="" required >
+                    </div>
+                </div>
+
+                <div class="form-group glass-input">
+                    <label>Phone Number</label>
+                    <div class="input-wrapper">
+                        <span>📞</span>
+                        <input type="tel" id="phoneNumber">
+                    </div>
+                </div>
+
+                <div class="form-group glass-input">
+                    <label>Communication Platform</label>
+                    <div class="input-wrapper">
+                        <span>🌐</span>
+                        <select id="commMethod" class="styled-select">
+                            <option value="Zoom">Zoom Video</option>
+                            <option value="Google Meet">Google Meet</option>
+                            <option value="Skype">Skype</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            
+                <div class="price-footer">
+                    <span class="price-label">Estimated Total:</span>
+                    <span class="total-price-text">RM <span id="totalDisplay">60.00</span></span>
+                </div>
+            </div>
+
+
+            <div class="button-group">
+                <button class="save-btn" onclick="saveDraft()">Save Progress</button>
+                <button class="pay-btn" onclick="showPaymentStep()">Proceed to Payment →</button>
+            </div>
+        </div>
+
+        <div id="transaction-step" class="booking-card" style="display: none;">
+            <div class="section-header">
+                <span class="badge" style="background: #22c55e;">Step 03</span>
+                <h2>Secure Transaction</h2>
+            </div>
+            
+            <div class="payment-summary-card bento-inner">
+                <div class="summary-item">
+                    <span>Learner</span>
+                    <strong id="summaryName">---</strong>
+                </div>
+                <div class="summary-item total">
+                    <span>Grand Total</span>
+                    <strong>RM <span id="paymentTotal">60.00</span></strong>
+                </div>
+            </div>
+
+            <form class="booking-form" onsubmit="processPayment(event)">
+                <div class="payment-methods-grid">
+                    <label class="method-card">
+                        <input type="radio" name="payType" value="card" checked>
+                        <span>💳 Card</span>
+                    </label>
+                    <label class="method-card">
+                        <input type="radio" name="payType" value="ewallet">
+                        <span>📱 E-Wallet</span>
+                    </label>
+                    <label class="method-card">
+                        <input type="radio" name="payType" value="fpx">
+                        <span>🏦 FPX</span>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>Billing Address (for verification)</label>
+                    <input type="text" id="billingAddress" placeholder="Unit/Street, Postcode, City" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Card Number</label>
+                    <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="16" required>
+                </div>
+
+                <div class="consent-container bento-inner">
+                    <label class="check-item">
+                        <input type="checkbox" id="termsAgree" required> I agree to the <a href="#">Terms & Conditions</a>
+                    </label>
+                    <label class="check-item">
+                        <input type="checkbox" id="privacyAgree" required> I accept the <a href="#">Privacy Policy</a>
+                    </label>
+                    <label class="check-item">
+                        <input type="checkbox" id="recordConsent"> Consent for session recording
+                    </label>
+                </div>
+                
+                <div class="button-group">
+                    <button type="button" class="save-btn" onclick="backToDetails()">Back</button>
+                    <button type="submit" class="pay-btn">Confirm & Pay Now</button>
+                </div>
+            </form>
+        </div>
+
+    </main>
+
+    <div id="receiptModal" class="modal">
+        <div class="modal-content">
+            <div class="success-check">✔</div>
+            <h2>Payment Successful!</h2>
+            <p>Invoice generated for: <br><strong id="receiptDate">---</strong></p>
+            <p style="font-size: 0.8rem; color: #64748b; margin-top: 5px;">A digital copy has been sent to your email.</p>
+            <button class="pay-btn" onclick="window.print()">Print Receipt / Invoice</button>
+            <button class="save-btn" style="width:100%; margin-top:10px" onclick="window.location.href='index.php'">Return Home</button>
+        </div>
+    </div>
+
+    <script src="booking.js"></script>
+</body>
+</html>

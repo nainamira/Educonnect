@@ -1,0 +1,304 @@
+/* ==========================================================================
+   1. GLOBAL VARIABLES & RESET
+   ========================================================================== */
+:root {
+    --primary-color: #353591; 
+    --secondary-color: #5c7cc6; 
+    --bg-light: #e8efff; 
+    --white: #ffffff;
+    --text-main: #1e293b;
+    --text-muted: #64748b; 
+    --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.04);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    --blue: #3498db;
+    --purple: #a855f7;
+    --green: #22c55e;
+    --orange: #f59e0b;
+    --red: #ef4444;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+body {
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    display: flex;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* ==========================================================================
+   2. SIDEBAR NAVIGATION
+   ========================================================================== */
+.sidebar {
+    width: 260px;
+    background-color: var(--secondary-color);
+    color: var(--white);
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    transition: var(--transition-smooth);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+/* TOP CORNER LOGO & TOGGLE ICON */
+.sidebar-logo {
+    padding: 20px 15px;
+    display: flex;
+    flex-direction: row; 
+    align-items: center;    
+    justify-content: space-between; /* Pushes toggle to top right corner */
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    background: rgba(0, 0, 0, 0.08);
+    height: 75px;
+}
+
+.admin-brand-logo {
+    height: 40px;
+    width: auto;
+    transition: var(--transition-smooth);
+}
+
+.menu-toggle {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    font-size: 1.1rem;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-smooth);
+}
+
+.menu-toggle:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* MINIMIZED STATE */
+.sidebar.collapsed {
+    width: 80px;
+}
+
+.sidebar.collapsed .nav-text,
+.sidebar.collapsed .admin-status,
+.sidebar.collapsed .admin-brand-logo {
+    display: none;
+}
+
+.sidebar.collapsed .sidebar-logo {
+    justify-content: center; /* Centers icon when logo is hidden */
+}
+
+/* STATUS LABEL */
+.admin-status-container {
+    padding-left: 20px;
+    margin: 20px 0;
+}
+
+.admin-status {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #ffd761;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 5px 12px;
+    background: rgba(255, 215, 97, 0.15);
+    border: 1px solid rgba(255, 215, 97, 0.4);
+    border-radius: 50px;
+}
+
+/* NAV LINKS */
+.sidebar-nav {
+    flex-grow: 1;
+    padding: 10px 15px;
+}
+
+.sidebar ul { list-style: none; }
+
+.sidebar ul li a {
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    gap: 12px;
+    transition: var(--transition-smooth);
+    border-radius: 12px;
+}
+
+.sidebar ul li:hover, .sidebar ul li.active {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.sidebar.collapsed .sidebar-nav ul li a {
+    justify-content: center;
+    padding: 15px 0;
+}
+
+.sidebar.collapsed .sidebar-nav ul li a i {
+    margin-right: 0;
+    font-size: 1.2rem;
+}
+
+/* ==========================================================================
+   3. MAIN WRAPPER & TOP NAV
+   ========================================================================== */
+.main-wrapper {
+    margin-left: 260px; 
+    width: calc(100% - 260px); 
+    min-height: 100vh;
+    transition: var(--transition-smooth);
+}
+
+/* When sidebar collapses, content moves left */
+.sidebar.collapsed + .main-wrapper {
+    margin-left: 80px;
+    width: calc(100% - 80px);
+}
+
+.top-nav {
+    background: var(--white);
+    padding: 15px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-soft);
+    position: sticky;
+    top: 0;
+    z-index: 900;
+}
+
+/* ==========================================================================
+   4. CONTENT HEADERS
+   ========================================================================== */
+.section-header {
+    display: flex;
+    justify-content: space-between; 
+    align-items: flex-start;
+    margin-bottom: 25px;
+    padding: 0 10px;
+}
+
+.header-text h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.header-text p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.header-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 5px;
+}
+
+/* ==========================================================================
+   5. BENTO GRID & TABLES
+   ========================================================================== */
+.content-container { padding: 30px; }
+
+.bento-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+}
+
+.bento-item {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 25px;
+    box-shadow: var(--shadow-soft);
+}
+
+.chart-area { grid-column: span 2; }
+.table-area { grid-column: 1 / -1; overflow: hidden; }
+
+.responsive-table {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+.premium-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+}
+
+.premium-table th {
+    text-align: left;
+    padding: 12px 20px;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+.premium-table td {
+    padding: 16px 20px;
+    background: #f8fafc; 
+    vertical-align: middle;
+}
+
+.premium-table tr td:first-child { border-radius: 12px 0 0 12px; }
+.premium-table tr td:last-child { border-radius: 0 12px 12px 0; }
+
+.badge {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+.badge.success { background: #dcfce7; color: #15803d; }
+
+/* ==========================================================================
+   6. STAT CARDS & RESPONSIVENESS
+   ========================================================================== */
+.stat-card { border-top: 5px solid transparent; }
+.stat-card.blue   { border-top-color: var(--blue); }
+.stat-card.purple { border-top-color: var(--purple); }
+.stat-card.green  { border-top-color: var(--green); }
+.stat-card.orange { border-top-color: var(--orange); }
+
+.stat-value { font-size: 1.8rem; font-weight: 800; margin: 10px 0; }
+
+.export-btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+.export-btn.pdf { background: #fee2e2; color: #b91c1c; }
+.export-btn.csv { background: var(--secondary-color); color: white; }
+
+@media (max-width: 1200px) {
+    .bento-grid { grid-template-columns: repeat(2, 1fr); }
+    .chart-area { grid-column: span 2; }
+}
+
+@media (max-width: 768px) {
+    .sidebar { width: 80px; }
+    .sidebar .nav-text, .sidebar .admin-status, .sidebar .admin-brand-logo { display: none; }
+    .main-wrapper { margin-left: 80px; width: calc(100% - 80px); }
+    .bento-grid { grid-template-columns: 1fr; }
+    .chart-area, .table-area { grid-column: span 1; }
+}

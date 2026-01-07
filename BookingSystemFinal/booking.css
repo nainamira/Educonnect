@@ -1,0 +1,374 @@
+/* Section Headers */
+.section-header { margin-bottom: 25px; }
+.badge {
+    background: #6366f1;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+.section-header p { color: #64748b; font-size: 0.95rem; }
+
+/* Input Wrapper & Icons */
+/* Error Styling */
+.input-error {
+    border: 2px solid #ef4444 !important;
+    background-color: #fff1f2 !important;
+}
+
+.error-msg {
+    color: #ef4444;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-top: 5px;
+    display: block;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.input-wrapper span {
+    position: absolute;
+    left: 15px;
+    font-size: 1.1rem;
+}
+.input-wrapper input, .input-wrapper select {
+    padding-left: 45px !important;
+}
+
+/* Tutor Mini Card (Bento Style) */
+.tutor-mini-card {
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 15px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    border: 1px solid #f1f5f9;
+}
+.tutor-avatar { font-size: 2rem; margin-right: 15px; }
+.tutor-info { flex: 1; }
+.tutor-label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; margin: 0; }
+.tutor-name { font-weight: 800; color: #1e293b; margin: 0; }
+.subject-tag {
+    background: #f1f5f9;
+    padding: 5px 12px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #6366f1;
+}
+
+/* Schedule Grid */
+.schedule-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 15px;
+}
+
+/* Price Footer */
+.price-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px dashed #e2e8f0;
+}
+.price-label { font-weight: 700; color: #64748b; }
+
+/* Payment Summary Card */
+.payment-summary-card {
+    background: #f8fafc;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.summary-item.total {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 2px solid #fff;
+    font-size: 1.2rem;
+}
+
+/* Success Modal Check */
+.success-check {
+    width: 60px;
+    height: 60px;
+    background: #22c55e;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    margin: 0 auto 20px;
+}
+
+/* =========================================
+   1. LAYOUT & CONTAINER
+   ========================================= */
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 5%;
+}
+
+/* =========================================
+   2. MODERN PILL PROGRESS BAR 
+   ========================================= */
+
+.modern-progress-bar {
+    display: flex;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    margin: 30px auto;
+    width: fit-content;
+    padding: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.progress-tab {
+    display: flex;
+    align-items: center;
+    padding: 12px 28px;
+    border-radius: 40px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.95rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: default;
+}
+
+.progress-tab .tab-number {
+    margin-right: 12px;
+    font-weight: 800;
+    opacity: 0.6;
+}
+
+/* Active State: The White Pill */
+.progress-tab.active {
+    background: white;
+    color: #3498db;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    transform: scale(1.05);
+}
+
+.progress-tab.active .tab-number {
+    opacity: 1;
+}
+
+/* Completed State */
+.progress-tab.completed {
+    color: #27ae60;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* =========================================
+   3. CARD & FORM STYLING
+   ========================================= */
+
+.booking-card {
+    background: white;
+    border-radius: var(--card-radius);
+    padding: 40px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
+
+.booking-card h2 {
+    color: #2c3e50;
+    margin-bottom: 25px;
+    font-size: 1.6rem;
+    font-weight: 600;
+    border-bottom: 2px solid #f4f7f6;
+    padding-bottom: 12px;
+}
+
+/* Form Grid for Learner Info */
+.booking-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-group input, .styled-select {
+    background: #f8fafc;
+    border: 2px solid transparent;
+    border-radius: 16px;
+    padding: 16px;
+    font-size: 1rem;
+    transition: 0.3s;
+}
+.form-group input:focus {
+    border-color: #a855f7;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.1);
+}
+
+.form-group input {
+    transition: all 0.3s ease;
+}
+
+/* =========================================
+   4. PRICING & CALCULATION
+   ========================================= */
+
+.calculation-box {
+    background-color: #f9fbff;
+    padding: 25px;
+    border-radius: 12px;
+    margin-top: 20px;
+    border-left: 5px solid #3498db;
+}
+
+.total-price-text {
+    color: #27ae60;
+    font-size: 1rem;
+    font-weight: bold;
+    margin-top: 20px;
+    display: block;
+}
+
+/* =========================================
+   5. BUTTON GROUPING
+   ========================================= */
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 35px;
+}
+
+.save-btn {
+    flex: 1;
+    padding: 16px;
+    background: #0c9e44;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.save-btn:hover {
+    background: #0c9e44;
+    color: #2c3e50;
+}
+
+.pay-btn {
+    flex: 2;
+    padding: 16px;
+    background: #2c3e50;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 400;
+    transition: all 0.3s ease;
+}
+
+.pay-btn:hover {
+    background: #3498db;
+    transform: translateY(-2px);
+}
+
+/* =========================================
+   6. TRANSACTION SUMMARY BOX
+   ========================================= */
+
+.payment-summary {
+    background: #fff9e6;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    border: 1px solid #ffeaa7;
+}
+
+.payment-summary p {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    color: #d35400;
+}
+
+/* =========================================
+   7. MODAL & PRINT
+   ========================================= */
+
+.modal {
+    display: none;
+    position: fixed; 
+    z-index: 2000; 
+    left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+}
+
+.modal-content {
+    background: white;
+    margin: 10% auto;
+    padding: 45px;
+    width: 90%;
+    max-width: 480px;
+    border-radius: 24px;
+    text-align: center;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+}
+
+/* =========================================
+   8. RESPONSIVE DESIGN
+   ========================================= */
+
+@media (max-width: 850px) {
+    .booking-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .modern-progress-bar {
+        width: 95%;
+    }
+
+    .progress-tab {
+        padding: 10px 15px;
+        font-size: 0.8rem;
+    }
+}
+
+@media print {
+    .navbar, .modern-progress-bar, .hero, .button-group, .save-btn {
+        display: none !important;
+    }
+    .modal {
+        display: block !important;
+        position: relative;
+        background: white;
+    }
+}
